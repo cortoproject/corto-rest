@@ -1,0 +1,7 @@
+{
+    "id": "corto/rest",
+    "type": "package",
+    "value": {
+        "dependencies": ["corto/web/server"]
+    }
+}

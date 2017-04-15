@@ -1,0 +1,12 @@
+#package corto/rest
+#import corto/web/server
+
+// REST interface that provides access to Corto store
+class Server: Service::
+    alias prefix: Service/prefix
+    root: string
+    int16 construct()
+    int16 onGet(HTTP/Connection c, HTTP/Request r, string uri) override
+    int16 onPost(HTTP/Connection c, HTTP/Request r, string uri) override
+    int16 onPut(HTTP/Connection c, HTTP/Request r, string uri) override
+    int16 onDelete(HTTP/Connection c, HTTP/Request r, string uri) override
