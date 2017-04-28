@@ -251,7 +251,7 @@ void rest_Server_apiDelete(
 
 /* $end */
 
-corto_int16 _rest_Server_construct(
+int16_t _rest_Server_construct(
     rest_Server this)
 {
 /* $begin(corto/rest/Server/construct) */
@@ -259,7 +259,7 @@ corto_int16 _rest_Server_construct(
 /* $end */
 }
 
-corto_int16 _rest_Server_onDelete(
+int16_t _rest_Server_onDelete(
     rest_Server this,
     server_HTTP_Connection c,
     server_HTTP_Request *r,
@@ -271,7 +271,7 @@ corto_int16 _rest_Server_onDelete(
 /* $end */
 }
 
-corto_int16 _rest_Server_onGet(
+int16_t _rest_Server_onGet(
     rest_Server this,
     server_HTTP_Connection c,
     server_HTTP_Request *r,
@@ -283,7 +283,7 @@ corto_int16 _rest_Server_onGet(
 /* $end */
 }
 
-corto_int16 _rest_Server_onPost(
+int16_t _rest_Server_onPost(
     rest_Server this,
     server_HTTP_Connection c,
     server_HTTP_Request *r,
@@ -295,7 +295,7 @@ corto_int16 _rest_Server_onPost(
 /* $end */
 }
 
-corto_int16 _rest_Server_onPut(
+int16_t _rest_Server_onPut(
     rest_Server this,
     server_HTTP_Connection c,
     server_HTTP_Request *r,
