@@ -96,8 +96,8 @@ void rest_Server_apiGet(
         if (descriptor) {
             corto_iter it = corto_llIter(types);
             corto_bool found = FALSE;
-            while (corto_iterHasNext(&it)) {
-                if (!strcmp(corto_iterNext(&it), result.type)) {
+            while (corto_iter_hasNext(&it)) {
+                if (!strcmp(corto_iter_next(&it), result.type)) {
                     found = TRUE;
                 }
             }
@@ -158,8 +158,8 @@ void rest_Server_apiGet(
 
         corto_iter it = corto_llIter(types);
         corto_bool first = TRUE;
-        while (corto_iterHasNext(&it)) {
-            corto_string typeId = corto_iterNext(&it);
+        while (corto_iter_hasNext(&it)) {
+            corto_string typeId = corto_iter_next(&it);
             corto_type t = corto_resolve(NULL, typeId);
             if (t) {
                 corto_string td = server_typedescriptor(t);
