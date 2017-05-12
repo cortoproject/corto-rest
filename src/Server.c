@@ -85,7 +85,7 @@ void rest_Server_apiGet(
     /* Collect types if typedescriptors are requested */
     corto_ll types = NULL;
     if (descriptor) {
-        types = corto_llNew();
+        types = corto_ll_new();
     }
 
     corto_resultIterForeach(iter, result) {
@@ -94,7 +94,7 @@ void rest_Server_apiGet(
         }
 
         if (descriptor) {
-            corto_iter it = corto_llIter(types);
+            corto_iter it = corto_ll_iter(types);
             corto_bool found = FALSE;
             while (corto_iter_hasNext(&it)) {
                 if (!strcmp(corto_iter_next(&it), result.type)) {
@@ -102,7 +102,7 @@ void rest_Server_apiGet(
                 }
             }
             if (!found) {
-                corto_llAppend(types, corto_strdup(result.type));
+                corto_ll_append(types, corto_strdup(result.type));
             }
         }
 
@@ -151,12 +151,12 @@ void rest_Server_apiGet(
         }
     }
 
-    if (descriptor && corto_llSize(types)) {
+    if (descriptor && corto_ll_size(types)) {
         corto_buffer tdbuffer = CORTO_BUFFER_INIT;
         corto_buffer_append(&tdbuffer, "{\"o\":%s,\"t\":{", responseStr);
         corto_dealloc(responseStr);
 
-        corto_iter it = corto_llIter(types);
+        corto_iter it = corto_ll_iter(types);
         corto_bool first = TRUE;
         while (corto_iter_hasNext(&it)) {
             corto_string typeId = corto_iter_next(&it);
@@ -174,7 +174,7 @@ void rest_Server_apiGet(
         }
         corto_buffer_appendstr(&tdbuffer, "}}");
         responseStr = corto_buffer_str(&tdbuffer);
-        corto_llFree(types);
+        corto_ll_free(types);
     }
 
     server_HTTP_Request_reply(r, responseStr);
