@@ -64,10 +64,11 @@ void rest_Server_apiGet(
             strcpy(uriWithRoot, *uri ? uri : "/");
         }
 
-        corto_trace("REST: select('%s', '%s').limit(%d, %d).type('%s').contentType('%s')",
-          uriWithRoot, select, offset, limit, typeFilter ? typeFilter : "*", contentType);
+        corto_trace("REST: select('%s').from('%s').limit(%d, %d).type('%s').contentType('%s')",
+          select, uriWithRoot, offset, limit, typeFilter ? typeFilter : "*", contentType);
 
-        ret = corto_select(uriWithRoot, select)
+        ret = corto_select(select)
+          .from(uriWithRoot)
           .limit(offset, limit)
           .type(typeFilter)
           .contentType(contentType)
