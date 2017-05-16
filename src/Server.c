@@ -48,7 +48,7 @@ void rest_Server_apiGet(
     if (!strcmp(server_HTTP_Request_getVar(r, "td"), "true")) { descriptor = TRUE; }
     offset = atoi(server_HTTP_Request_getVar(r, "offset"));
     limit = atoi(server_HTTP_Request_getVar(r, "limit"));
-    typeFilter = server_HTTP_Request_getVar(r, "typeof");
+    typeFilter = server_HTTP_Request_getVar(r, "typefilter");
     select = server_HTTP_Request_getVar(r, "select");
     corto_string contentType = value ? "text/corto" : NULL;
 
@@ -116,7 +116,7 @@ void rest_Server_apiGet(
             corto_id id;
             char *escaped = id;
             corto_fullpath(id, result.owner);
-            if (!corto_checkAttr(result.owner, CORTO_ATTR_SCOPED)) {
+            if (!corto_checkAttr(result.owner, CORTO_ATTR_NAMED)) {
                 int length = stresc(NULL, 0, id);
                 escaped = corto_alloc(length + 1);
                 stresc(escaped, length + 1, id);
