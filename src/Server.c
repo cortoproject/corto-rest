@@ -1,14 +1,7 @@
-/* $CORTO_GENERATED
- *
- * Server.c
- *
- * Only code written between the begin and end tags will be preserved
- * when the file is regenerated.
- */
+/* This is a managed file. Do not delete this comment. */
 
 #include <corto/rest/rest.h>
 
-/* $header() */
 #include "corto/fmt/json/json.h"
 
 void rest_Server_apiGet(
@@ -250,60 +243,50 @@ void rest_Server_apiDelete(
     }
 }
 
-/* $end */
 
-int16_t _rest_Server_construct(
+int16_t rest_Server_construct(
     rest_Server this)
 {
-/* $begin(corto/rest/Server/construct) */
     return server_Service_construct(this);
-/* $end */
 }
 
-int16_t _rest_Server_onDelete(
+int16_t rest_Server_onDelete(
     rest_Server this,
     server_HTTP_Connection c,
     server_HTTP_Request *r,
     corto_string uri)
 {
-/* $begin(corto/rest/Server/onDelete) */
     rest_Server_apiDelete(this, c, r, uri);
     return 1;
-/* $end */
 }
 
-int16_t _rest_Server_onGet(
+int16_t rest_Server_onGet(
     rest_Server this,
     server_HTTP_Connection c,
     server_HTTP_Request *r,
     corto_string uri)
 {
-/* $begin(corto/rest/Server/onGet) */
     rest_Server_apiGet(this, c, r, uri);
     return 1;
-/* $end */
 }
 
-int16_t _rest_Server_onPost(
+int16_t rest_Server_onPost(
     rest_Server this,
     server_HTTP_Connection c,
     server_HTTP_Request *r,
     corto_string uri)
 {
-/* $begin(corto/rest/Server/onPost) */
     rest_Server_apiPost(this, c, r, uri);
     return 1;
-/* $end */
 }
 
-int16_t _rest_Server_onPut(
+int16_t rest_Server_onPut(
     rest_Server this,
     server_HTTP_Connection c,
     server_HTTP_Request *r,
     corto_string uri)
 {
-/* $begin(corto/rest/Server/onPut) */
     rest_Server_apiPut(this, c, r, uri);
     return 1;
-/* $end */
 }
+
