@@ -191,7 +191,7 @@ void rest_Server_apiPut(
 
     corto_trace("REST: PUT uri='%s' id='%s' value = '%s' (computed id = %s)", uri, id, value, realId);
 
-    if (corto_publish(CORTO_ON_UPDATE, realId, NULL, "text/json", value)) {
+    if (corto_publish(CORTO_UPDATE, realId, NULL, "text/json", value)) {
         corto_string msg;
         corto_asprintf(&msg, "400: PUT failed: %s: id=%s, value=%s",
           corto_lasterr(), id, value);
@@ -213,7 +213,7 @@ void rest_Server_apiPost(
     char *type = server_HTTP_Request_getVar(r, "type");
     char *value = server_HTTP_Request_getVar(r, "value");
 
-    if (corto_publish(CORTO_ON_DEFINE, id, type, "text/json", value)) {
+    if (corto_publish(CORTO_DEFINE, id, type, "text/json", value)) {
         corto_string msg;
         corto_asprintf(&msg, "400: POST failed: %s: id=%s, type=%s, value=%s",
           corto_lasterr(), id, type, value);
@@ -232,7 +232,7 @@ void rest_Server_apiDelete(
     corto_string uri)
 {
     corto_string select = server_HTTP_Request_getVar(r, "select");
-    if (corto_publish(CORTO_ON_DELETE, select, NULL, NULL, NULL)) {
+    if (corto_publish(CORTO_DELETE, select, NULL, NULL, NULL)) {
         corto_string msg;
         corto_asprintf(&msg, "400: DELETE failed: %s", corto_lasterr());
         server_HTTP_Request_setStatus(r, 400);
