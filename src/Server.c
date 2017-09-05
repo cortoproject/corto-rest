@@ -135,8 +135,7 @@ void rest_Server_apiGet(
 
     if (!count) {
         if (!select || (!strchr(select, '/') && !strchr(select, '*'))) {
-            corto_string msg;
-            corto_asprintf(&msg, "404: resource not found '%s'", uri);
+            corto_string msg = corto_asprintf("404: resource not found '%s'", uri);
             server_HTTP_Request_setStatus(r, 404);
             server_HTTP_Request_reply(r, msg);
             corto_dealloc(msg);
@@ -193,7 +192,7 @@ void rest_Server_apiPut(
 
     if (corto_publish(CORTO_UPDATE, realId, NULL, "text/json", value)) {
         corto_string msg;
-        corto_asprintf(&msg, "400: PUT failed: %s: id=%s, value=%s",
+        msg = corto_asprintf("400: PUT failed: %s: id=%s, value=%s",
           corto_lasterr(), id, value);
         server_HTTP_Request_setStatus(r, 400);
         server_HTTP_Request_reply(r, msg);
@@ -215,7 +214,7 @@ void rest_Server_apiPost(
 
     if (corto_publish(CORTO_DEFINE, id, type, "text/json", value)) {
         corto_string msg;
-        corto_asprintf(&msg, "400: POST failed: %s: id=%s, type=%s, value=%s",
+        msg = corto_asprintf("400: POST failed: %s: id=%s, type=%s, value=%s",
           corto_lasterr(), id, type, value);
         server_HTTP_Request_setStatus(r, 400);
         server_HTTP_Request_reply(r, msg);
@@ -234,7 +233,7 @@ void rest_Server_apiDelete(
     corto_string select = server_HTTP_Request_getVar(r, "select");
     if (corto_publish(CORTO_DELETE, select, NULL, NULL, NULL)) {
         corto_string msg;
-        corto_asprintf(&msg, "400: DELETE failed: %s", corto_lasterr());
+        msg = corto_asprintf("400: DELETE failed: %s", corto_lasterr());
         server_HTTP_Request_setStatus(r, 400);
         server_HTTP_Request_reply(r, msg);
     } else {
