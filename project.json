@@ -2,6 +2,9 @@
     "id": "corto/rest",
     "type": "package",
     "value": {
+        "author": "Sander Mertens",
+        "version": "1.0.0",
+        "description": "Corto REST API service",        
         "dependencies": ["corto/httpserver"]
     }
 }
