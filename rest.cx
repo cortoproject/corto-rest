@@ -1,5 +1,5 @@
-#package corto/rest
-#import corto/web/server
+in package /corto/rest
+use corto/httpserver
 
 // REST interface that provides access to Corto store
 class Server: Service::

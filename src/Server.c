@@ -6,8 +6,8 @@
 
 void rest_Server_apiGet(
     rest_Server this,
-    server_HTTP_Connection c,
-    server_HTTP_Request *r,
+    httpserver_HTTP_Connection c,
+    httpserver_HTTP_Request *r,
     corto_string uri)
 {
     corto_bool value = FALSE;
@@ -28,21 +28,21 @@ void rest_Server_apiGet(
     corto_buffer response = CORTO_BUFFER_INIT;
 
     /* Set correct content type */
-    server_HTTP_Request_setHeader(
+    httpserver_HTTP_Request_setHeader(
         r, "Content-Type", "application/json; charset=utf-8");
 
     /* Determine what to show */
-    if (!strcmp(server_HTTP_Request_getVar(r, "value"), "true")) { value = TRUE; }
-    if (!strcmp(server_HTTP_Request_getVar(r, "type"), "true")) { type = TRUE; }
-    if (!strcmp(server_HTTP_Request_getVar(r, "parent"), "true")) { parent = TRUE; }
-    if (!strcmp(server_HTTP_Request_getVar(r, "name"), "true")) { name = TRUE; }
-    if (!strcmp(server_HTTP_Request_getVar(r, "owner"), "true")) { owner = TRUE; }
-    if (!strcmp(server_HTTP_Request_getVar(r, "leaf"), "true")) { leaf = TRUE; }
-    if (!strcmp(server_HTTP_Request_getVar(r, "td"), "true")) { descriptor = TRUE; }
-    offset = atoi(server_HTTP_Request_getVar(r, "offset"));
-    limit = atoi(server_HTTP_Request_getVar(r, "limit"));
-    typeFilter = server_HTTP_Request_getVar(r, "typefilter");
-    select = server_HTTP_Request_getVar(r, "select");
+    if (!strcmp(httpserver_HTTP_Request_getVar(r, "value"), "true")) { value = TRUE; }
+    if (!strcmp(httpserver_HTTP_Request_getVar(r, "type"), "true")) { type = TRUE; }
+    if (!strcmp(httpserver_HTTP_Request_getVar(r, "parent"), "true")) { parent = TRUE; }
+    if (!strcmp(httpserver_HTTP_Request_getVar(r, "name"), "true")) { name = TRUE; }
+    if (!strcmp(httpserver_HTTP_Request_getVar(r, "owner"), "true")) { owner = TRUE; }
+    if (!strcmp(httpserver_HTTP_Request_getVar(r, "leaf"), "true")) { leaf = TRUE; }
+    if (!strcmp(httpserver_HTTP_Request_getVar(r, "td"), "true")) { descriptor = TRUE; }
+    offset = atoi(httpserver_HTTP_Request_getVar(r, "offset"));
+    limit = atoi(httpserver_HTTP_Request_getVar(r, "limit"));
+    typeFilter = httpserver_HTTP_Request_getVar(r, "typefilter");
+    select = httpserver_HTTP_Request_getVar(r, "select");
     corto_string contentType = value ? "text/corto" : NULL;
 
     if (!*typeFilter) typeFilter = NULL;
@@ -67,8 +67,8 @@ void rest_Server_apiGet(
           .contentType(contentType)
           .iter(&iter);
         if (ret) {
-            server_HTTP_Request_setStatus(r, 400);
-            server_HTTP_Request_reply(r, "400: bad request\n");
+            httpserver_HTTP_Request_setStatus(r, 400);
+            httpserver_HTTP_Request_reply(r, "400: bad request\n");
             return;
         };
     }
@@ -136,8 +136,8 @@ void rest_Server_apiGet(
     if (!count) {
         if (!select || (!strchr(select, '/') && !strchr(select, '*'))) {
             corto_string msg = corto_asprintf("404: resource not found '%s'", uri);
-            server_HTTP_Request_setStatus(r, 404);
-            server_HTTP_Request_reply(r, msg);
+            httpserver_HTTP_Request_setStatus(r, 404);
+            httpserver_HTTP_Request_reply(r, msg);
             corto_dealloc(msg);
             corto_dealloc(responseStr);
             return;
@@ -155,7 +155,7 @@ void rest_Server_apiGet(
             corto_string typeId = corto_iter_next(&it);
             corto_type t = corto_resolve(NULL, typeId);
             if (t) {
-                corto_string td = server_typedescriptor(t);
+                corto_string td = httpserver_typedescriptor(t);
                 if (!first) {
                     corto_buffer_appendstr(&tdbuffer, ",");
                 } else {
@@ -170,22 +170,22 @@ void rest_Server_apiGet(
         corto_ll_free(types);
     }
 
-    server_HTTP_Request_reply(r, responseStr);
+    httpserver_HTTP_Request_reply(r, responseStr);
 
     corto_dealloc(responseStr);
 }
 
 void rest_Server_apiPut(
     rest_Server this,
-    server_HTTP_Connection c,
-    server_HTTP_Request *r,
+    httpserver_HTTP_Connection c,
+    httpserver_HTTP_Request *r,
     corto_string uri)
 {
-    char *value = server_HTTP_Request_getVar(r, "value");
-    char *id = server_HTTP_Request_getVar(r, "id");
+    char *value = httpserver_HTTP_Request_getVar(r, "value");
+    char *id = httpserver_HTTP_Request_getVar(r, "id");
 
     corto_id realId;
-    sprintf(realId, "/%s/%s/%s", server_Service(this)->prefix, uri, id);
+    sprintf(realId, "/%s/%s/%s", httpserver_Service(this)->prefix, uri, id);
     corto_cleanpath(realId, realId);
 
     corto_trace("REST: PUT uri='%s' id='%s' value = '%s' (computed id = %s)", uri, id, value, realId);
@@ -194,51 +194,51 @@ void rest_Server_apiPut(
         corto_string msg;
         msg = corto_asprintf("400: PUT failed: %s: id=%s, value=%s",
           corto_lasterr(), id, value);
-        server_HTTP_Request_setStatus(r, 400);
-        server_HTTP_Request_reply(r, msg);
+        httpserver_HTTP_Request_setStatus(r, 400);
+        httpserver_HTTP_Request_reply(r, msg);
     } else {
-        server_HTTP_Request_setStatus(r, 200);
-        server_HTTP_Request_reply(r, "Ok\n");
+        httpserver_HTTP_Request_setStatus(r, 200);
+        httpserver_HTTP_Request_reply(r, "Ok\n");
     }
 }
 
 void rest_Server_apiPost(
     rest_Server this,
-    server_HTTP_Connection c,
-    server_HTTP_Request *r,
+    httpserver_HTTP_Connection c,
+    httpserver_HTTP_Request *r,
     corto_string uri)
 {
-    char *id = server_HTTP_Request_getVar(r, "id");
-    char *type = server_HTTP_Request_getVar(r, "type");
-    char *value = server_HTTP_Request_getVar(r, "value");
+    char *id = httpserver_HTTP_Request_getVar(r, "id");
+    char *type = httpserver_HTTP_Request_getVar(r, "type");
+    char *value = httpserver_HTTP_Request_getVar(r, "value");
 
     if (corto_publish(CORTO_DEFINE, id, type, "text/json", value)) {
         corto_string msg;
         msg = corto_asprintf("400: POST failed: %s: id=%s, type=%s, value=%s",
           corto_lasterr(), id, type, value);
-        server_HTTP_Request_setStatus(r, 400);
-        server_HTTP_Request_reply(r, msg);
+        httpserver_HTTP_Request_setStatus(r, 400);
+        httpserver_HTTP_Request_reply(r, msg);
     } else {
-        server_HTTP_Request_setStatus(r, 200);
-        server_HTTP_Request_reply(r, "Ok\n");
+        httpserver_HTTP_Request_setStatus(r, 200);
+        httpserver_HTTP_Request_reply(r, "Ok\n");
     }
 }
 
 void rest_Server_apiDelete(
     rest_Server this,
-    server_HTTP_Connection c,
-    server_HTTP_Request *r,
+    httpserver_HTTP_Connection c,
+    httpserver_HTTP_Request *r,
     corto_string uri)
 {
-    corto_string select = server_HTTP_Request_getVar(r, "select");
+    corto_string select = httpserver_HTTP_Request_getVar(r, "select");
     if (corto_publish(CORTO_DELETE, select, NULL, NULL, NULL)) {
         corto_string msg;
         msg = corto_asprintf("400: DELETE failed: %s", corto_lasterr());
-        server_HTTP_Request_setStatus(r, 400);
-        server_HTTP_Request_reply(r, msg);
+        httpserver_HTTP_Request_setStatus(r, 400);
+        httpserver_HTTP_Request_reply(r, msg);
     } else {
-        server_HTTP_Request_setStatus(r, 200);
-        server_HTTP_Request_reply(r, "Ok\n");
+        httpserver_HTTP_Request_setStatus(r, 200);
+        httpserver_HTTP_Request_reply(r, "Ok\n");
     }
 }
 
@@ -246,13 +246,13 @@ void rest_Server_apiDelete(
 int16_t rest_Server_construct(
     rest_Server this)
 {
-    return server_Service_construct(this);
+    return httpserver_Service_construct(this);
 }
 
 int16_t rest_Server_onDelete(
     rest_Server this,
-    server_HTTP_Connection c,
-    server_HTTP_Request *r,
+    httpserver_HTTP_Connection c,
+    httpserver_HTTP_Request *r,
     corto_string uri)
 {
     rest_Server_apiDelete(this, c, r, uri);
@@ -261,8 +261,8 @@ int16_t rest_Server_onDelete(
 
 int16_t rest_Server_onGet(
     rest_Server this,
-    server_HTTP_Connection c,
-    server_HTTP_Request *r,
+    httpserver_HTTP_Connection c,
+    httpserver_HTTP_Request *r,
     corto_string uri)
 {
     rest_Server_apiGet(this, c, r, uri);
@@ -271,8 +271,8 @@ int16_t rest_Server_onGet(
 
 int16_t rest_Server_onPost(
     rest_Server this,
-    server_HTTP_Connection c,
-    server_HTTP_Request *r,
+    httpserver_HTTP_Connection c,
+    httpserver_HTTP_Request *r,
     corto_string uri)
 {
     rest_Server_apiPost(this, c, r, uri);
@@ -281,8 +281,8 @@ int16_t rest_Server_onPost(
 
 int16_t rest_Server_onPut(
     rest_Server this,
-    server_HTTP_Connection c,
-    server_HTTP_Request *r,
+    httpserver_HTTP_Connection c,
+    httpserver_HTTP_Request *r,
     corto_string uri)
 {
     rest_Server_apiPut(this, c, r, uri);
