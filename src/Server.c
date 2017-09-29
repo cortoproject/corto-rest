@@ -50,8 +50,8 @@ void rest_Server_apiGet(
 
     {
         corto_id uriWithRoot;
-        if (this->root) {
-            sprintf(uriWithRoot, "%s/%s", this->root, uri);
+        if (this->from) {
+            sprintf(uriWithRoot, "%s/%s", this->from, uri);
             corto_cleanpath(uriWithRoot, uriWithRoot);
         } else {
             strcpy(uriWithRoot, *uri ? uri : "/");

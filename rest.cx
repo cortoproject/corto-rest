@@ -3,7 +3,7 @@ use corto/httpserver
 
 // REST interface that provides access to Corto store
 class Server: Service::
-    root: string
+    from: string
     int16 construct()
     int16 onGet(HTTP/Connection c, HTTP/Request r, string uri) override
     int16 onPost(HTTP/Connection c, HTTP/Request r, string uri) override
