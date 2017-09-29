@@ -10,7 +10,7 @@ void rest_Server_apiGet(
     httpserver_HTTP_Request *r,
     corto_string uri)
 {
-    corto_bool value = FALSE;
+    corto_bool value = TRUE;
     corto_bool type = FALSE;
     corto_bool parent = FALSE;
     corto_bool name = FALSE;
@@ -31,8 +31,11 @@ void rest_Server_apiGet(
     httpserver_HTTP_Request_setHeader(
         r, "Content-Type", "application/json; charset=utf-8");
 
+    httpserver_HTTP_Request_setHeader(
+        r, "Access-Control-Allow-Origin", "*");
+
     /* Determine what to show */
-    if (!strcmp(httpserver_HTTP_Request_getVar(r, "value"), "true")) { value = TRUE; }
+    if (!strcmp(httpserver_HTTP_Request_getVar(r, "value"), "false")) { value = FALSE; }
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "type"), "true")) { type = TRUE; }
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "parent"), "true")) { parent = TRUE; }
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "name"), "true")) { name = TRUE; }
@@ -43,10 +46,14 @@ void rest_Server_apiGet(
     limit = atoi(httpserver_HTTP_Request_getVar(r, "limit"));
     typeFilter = httpserver_HTTP_Request_getVar(r, "typefilter");
     select = httpserver_HTTP_Request_getVar(r, "select");
-    corto_string contentType = value ? "text/corto" : NULL;
+    corto_string contentType = value ? "text/json" : NULL;
 
     if (!*typeFilter) typeFilter = NULL;
     if (!*select) select = NULL;
+
+    if (!select) {
+        select = "*";
+    }
 
     {
         corto_id uriWithRoot;
