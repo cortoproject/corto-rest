@@ -4,8 +4,8 @@
 
 #include "driver/fmt/json/json.h"
 
-void rest_Server_apiGet(
-    rest_Server this,
+void rest_service_apiGet(
+    rest_service this,
     httpserver_HTTP_Connection c,
     httpserver_HTTP_Request *r,
     corto_string uri)
@@ -182,8 +182,8 @@ void rest_Server_apiGet(
     corto_dealloc(responseStr);
 }
 
-void rest_Server_apiPut(
-    rest_Server this,
+void rest_service_apiPut(
+    rest_service this,
     httpserver_HTTP_Connection c,
     httpserver_HTTP_Request *r,
     corto_string uri)
@@ -209,8 +209,8 @@ void rest_Server_apiPut(
     }
 }
 
-void rest_Server_apiPost(
-    rest_Server this,
+void rest_service_apiPost(
+    rest_service this,
     httpserver_HTTP_Connection c,
     httpserver_HTTP_Request *r,
     corto_string uri)
@@ -231,8 +231,8 @@ void rest_Server_apiPost(
     }
 }
 
-void rest_Server_apiDelete(
-    rest_Server this,
+void rest_service_apiDelete(
+    rest_service this,
     httpserver_HTTP_Connection c,
     httpserver_HTTP_Request *r,
     corto_string uri)
@@ -249,50 +249,49 @@ void rest_Server_apiDelete(
     }
 }
 
-
-int16_t rest_Server_construct(
-    rest_Server this)
+int16_t rest_service_construct(
+    rest_service this)
 {
     return httpserver_Service_construct(this);
 }
 
-int16_t rest_Server_onDelete(
-    rest_Server this,
+int16_t rest_service_onDelete(
+    rest_service this,
     httpserver_HTTP_Connection c,
     httpserver_HTTP_Request *r,
     corto_string uri)
 {
-    rest_Server_apiDelete(this, c, r, uri);
+    rest_service_apiDelete(this, c, r, uri);
     return 1;
 }
 
-int16_t rest_Server_onGet(
-    rest_Server this,
+int16_t rest_service_onGet(
+    rest_service this,
     httpserver_HTTP_Connection c,
     httpserver_HTTP_Request *r,
     corto_string uri)
 {
-    rest_Server_apiGet(this, c, r, uri);
+    rest_service_apiGet(this, c, r, uri);
     return 1;
 }
 
-int16_t rest_Server_onPost(
-    rest_Server this,
+int16_t rest_service_onPost(
+    rest_service this,
     httpserver_HTTP_Connection c,
     httpserver_HTTP_Request *r,
     corto_string uri)
 {
-    rest_Server_apiPost(this, c, r, uri);
+    rest_service_apiPost(this, c, r, uri);
     return 1;
 }
 
-int16_t rest_Server_onPut(
-    rest_Server this,
+int16_t rest_service_onPut(
+    rest_service this,
     httpserver_HTTP_Connection c,
     httpserver_HTTP_Request *r,
     corto_string uri)
 {
-    rest_Server_apiPut(this, c, r, uri);
+    rest_service_apiPut(this, c, r, uri);
     return 1;
 }
 

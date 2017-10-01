@@ -2,7 +2,7 @@ in package /corto/rest
 use corto/httpserver
 
 // REST interface that provides access to Corto store
-class Server: Service::
+class service: httpserver/Service::
     from: string
     int16 construct()
     int16 onGet(HTTP/Connection c, HTTP/Request r, string uri) override
