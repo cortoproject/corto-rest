@@ -11,7 +11,6 @@ void rest_service_apiGet(
     corto_string uri)
 {
     corto_bool value = TRUE;
-    corto_bool type = FALSE;
     corto_bool parent = FALSE;
     corto_bool name = FALSE;
     corto_bool owner = FALSE;
@@ -19,7 +18,7 @@ void rest_service_apiGet(
     corto_bool descriptor = FALSE;
     corto_uint64 offset = 0;
     corto_uint64 limit = 0;
-    corto_string typeFilter = NULL;
+    corto_string type = FALSE;
     corto_string select = NULL;
     corto_int32 count = 0;
     corto_int16 ret;
@@ -36,7 +35,6 @@ void rest_service_apiGet(
 
     /* Determine what to show */
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "value"), "false")) { value = FALSE; }
-    if (!strcmp(httpserver_HTTP_Request_getVar(r, "type"), "true")) { type = TRUE; }
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "parent"), "true")) { parent = TRUE; }
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "name"), "true")) { name = TRUE; }
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "owner"), "true")) { owner = TRUE; }
@@ -44,11 +42,11 @@ void rest_service_apiGet(
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "td"), "true")) { descriptor = TRUE; }
     offset = atoi(httpserver_HTTP_Request_getVar(r, "offset"));
     limit = atoi(httpserver_HTTP_Request_getVar(r, "limit"));
-    typeFilter = httpserver_HTTP_Request_getVar(r, "typefilter");
+    type = httpserver_HTTP_Request_getVar(r, "type");
     select = httpserver_HTTP_Request_getVar(r, "select");
     corto_string contentType = value ? "text/json" : NULL;
 
-    if (!*typeFilter) typeFilter = NULL;
+    if (!*type) type = NULL;
     if (!*select) select = NULL;
 
     if (!select) {
@@ -65,12 +63,12 @@ void rest_service_apiGet(
         }
 
         corto_trace("REST: select('%s').from('%s').limit(%d, %d).type('%s').contentType('%s')",
-          select, uriWithRoot, offset, limit, typeFilter ? typeFilter : "*", contentType);
+          select, uriWithRoot, offset, limit, type ? type : "*", contentType);
 
         ret = corto_select(select)
           .from(uriWithRoot)
           .limit(offset, limit)
-          .type(typeFilter)
+          .type(type)
           .contentType(contentType)
           .iter(&iter);
         if (ret) {
@@ -109,7 +107,7 @@ void rest_service_apiGet(
 
         corto_buffer_append(&response, "{\"id\":\"%s\"", result.id);
         if (parent && strcmp(result.parent, ".")) corto_buffer_append(&response, ",\"parent\":\"%s\"", result.parent);
-        if (type) corto_buffer_append(&response, ",\"type\":\"%s\"", result.type);
+        corto_buffer_append(&response, ",\"type\":\"%s\"", result.type);
         if (name && result.name) corto_buffer_append(&response, ",\"name\":\"%s\"", result.name);
         if (leaf) corto_buffer_append(&response, ",\"leaf\":%s", result.flags & CORTO_RESULT_LEAF ? "true" : "false");
         if (owner && result.owner) {
