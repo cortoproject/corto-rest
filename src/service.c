@@ -67,7 +67,8 @@ void rest_service_apiGet(
 
         ret = corto_select(select)
           .from(uriWithRoot)
-          .limit(offset, limit)
+          .offset(offset)
+          .limit(limit)
           .type(type)
           .contentType(contentType)
           .iter(&iter);
@@ -292,4 +293,3 @@ int16_t rest_service_onPut(
     rest_service_apiPut(this, c, r, uri);
     return 1;
 }
-
