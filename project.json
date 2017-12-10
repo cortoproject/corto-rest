@@ -3,8 +3,11 @@
     "type": "package",
     "value": {
         "author": "Sander Mertens",
+        "organization": "cortoproject",
+        "repository": "https://github.com/cortoproject/rest",
+        "license": "MIT",        
+        "description": "REST service for querying store contents",
         "version": "1.0.0",
-        "description": "Corto REST API service",        
-        "dependencies": ["corto/httpserver"]
+        "use": ["corto/httpserver"]
     }
 }

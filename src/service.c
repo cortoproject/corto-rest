@@ -57,7 +57,7 @@ void rest_service_apiGet(
         corto_id uriWithRoot;
         if (this->from) {
             sprintf(uriWithRoot, "%s/%s", this->from, uri);
-            corto_cleanpath(uriWithRoot, uriWithRoot);
+            corto_path_clean(uriWithRoot, uriWithRoot);
         } else {
             strcpy(uriWithRoot, *uri ? uri : "/");
         }
@@ -88,7 +88,8 @@ void rest_service_apiGet(
         types = corto_ll_new();
     }
 
-    corto_resultIterForeach(iter, result) {
+    while (corto_iter_hasNext(&iter)) {
+        corto_result *result = corto_iter_next(&iter);
         if (count) {
             corto_buffer_append(&response, ",");
         }
@@ -97,25 +98,25 @@ void rest_service_apiGet(
             corto_iter it = corto_ll_iter(types);
             corto_bool found = FALSE;
             while (corto_iter_hasNext(&it)) {
-                if (!strcmp(corto_iter_next(&it), result.type)) {
+                if (!strcmp(corto_iter_next(&it), result->type)) {
                     found = TRUE;
                 }
             }
             if (!found) {
-                corto_ll_append(types, corto_strdup(result.type));
+                corto_ll_append(types, corto_strdup(result->type));
             }
         }
 
-        corto_buffer_append(&response, "{\"id\":\"%s\"", result.id);
-        if (parent && strcmp(result.parent, ".")) corto_buffer_append(&response, ",\"parent\":\"%s\"", result.parent);
-        corto_buffer_append(&response, ",\"type\":\"%s\"", result.type);
-        if (name && result.name) corto_buffer_append(&response, ",\"name\":\"%s\"", result.name);
-        if (leaf) corto_buffer_append(&response, ",\"leaf\":%s", result.flags & CORTO_RESULT_LEAF ? "true" : "false");
-        if (owner && result.owner) {
+        corto_buffer_append(&response, "{\"id\":\"%s\"", result->id);
+        if (parent && strcmp(result->parent, ".")) corto_buffer_append(&response, ",\"parent\":\"%s\"", result->parent);
+        corto_buffer_append(&response, ",\"type\":\"%s\"", result->type);
+        if (name && result->name) corto_buffer_append(&response, ",\"name\":\"%s\"", result->name);
+        if (leaf) corto_buffer_append(&response, ",\"leaf\":%s", result->flags & CORTO_RESULT_LEAF ? "true" : "false");
+        if (owner && result->owner) {
             corto_id id;
             char *escaped = id;
-            corto_fullpath(id, result.owner);
-            if (!corto_checkAttr(result.owner, CORTO_ATTR_NAMED)) {
+            corto_fullpath(id, result->owner);
+            if (!corto_checkAttr(result->owner, CORTO_ATTR_NAMED)) {
                 int length = stresc(NULL, 0, id);
                 escaped = corto_alloc(length + 1);
                 stresc(escaped, length + 1, id);
@@ -127,7 +128,7 @@ void rest_service_apiGet(
         }
 
         if (value) {
-            corto_string valueTxt = corto_result_getText(&result);
+            corto_string valueTxt = corto_result_getText(result);
             if (valueTxt) {
                 corto_buffer_append(&response, ",\"value\":%s", valueTxt);
             }
@@ -150,7 +151,7 @@ void rest_service_apiGet(
         }
     }
 
-    if (descriptor && corto_ll_size(types)) {
+    if (descriptor && corto_ll_count(types)) {
         corto_buffer tdbuffer = CORTO_BUFFER_INIT;
         corto_buffer_append(&tdbuffer, "{\"o\":%s,\"t\":{", responseStr);
         corto_dealloc(responseStr);
@@ -192,7 +193,7 @@ void rest_service_apiPut(
 
     corto_id realId;
     sprintf(realId, "/%s/%s/%s", httpserver_Service(this)->prefix, uri, id);
-    corto_cleanpath(realId, realId);
+    corto_path_clean(realId, realId);
 
     corto_trace("REST: PUT uri='%s' id='%s' value = '%s' (computed id = %s)", uri, id, value, realId);
 
