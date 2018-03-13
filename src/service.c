@@ -121,9 +121,9 @@ void rest_service_apiGet(
             char *escaped = id;
             corto_fullpath(id, result->owner);
             if (!corto_check_attr(result->owner, CORTO_ATTR_NAMED)) {
-                int length = stresc(NULL, 0, id);
+                int length = stresc(NULL, 0, '"', id);
                 escaped = corto_alloc(length + 1);
-                stresc(escaped, length + 1, id);
+                stresc(escaped, length + 1, '"', id);
             }
 
             corto_buffer_append(&response , ",\"owner\":\"%s\"", escaped);
