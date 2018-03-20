@@ -5,7 +5,7 @@ use corto/httpserver
 class service: httpserver/Service::
     from: string
     int16 construct()
-    int16 onGet(HTTP/Connection c, HTTP/Request r, string uri) override
-    int16 onPost(HTTP/Connection c, HTTP/Request r, string uri) override
-    int16 onPut(HTTP/Connection c, HTTP/Request r, string uri) override
-    int16 onDelete(HTTP/Connection c, HTTP/Request r, string uri) override
+    int16 on_get(HTTP/Connection c, HTTP/Request r, string uri) override
+    int16 on_post(HTTP/Connection c, HTTP/Request r, string uri) override
+    int16 on_put(HTTP/Connection c, HTTP/Request r, string uri) override
+    int16 on_delete(HTTP/Connection c, HTTP/Request r, string uri) override

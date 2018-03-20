@@ -34,15 +34,10 @@ void rest_service_apiGet(
 
     /* Determine what to show */
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "value"), "false")) { value = FALSE; }
-
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "parent"), "true")) { parent = TRUE; }
-
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "name"), "true")) { name = TRUE; }
-
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "owner"), "true")) { owner = TRUE; }
-
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "leaf"), "true")) { leaf = TRUE; }
-
     if (!strcmp(httpserver_HTTP_Request_getVar(r, "td"), "true")) { descriptor = TRUE; }
 
     offset = atoi(httpserver_HTTP_Request_getVar(r, "offset"));
@@ -50,6 +45,7 @@ void rest_service_apiGet(
     type = httpserver_HTTP_Request_getVar(r, "type");
     select = httpserver_HTTP_Request_getVar(r, "select");
     corto_string contentType = value ? "text/json" : NULL;
+
     if (!*type) type = NULL;
     if (!*select) select = NULL;
     if (!select) {
@@ -65,8 +61,10 @@ void rest_service_apiGet(
             strcpy(uriWithRoot, *uri ? uri : "/");
         }
 
-        corto_trace("REST: select('%s').from('%s').limit(%d, %d).type('%s').contentType('%s')",
+        corto_trace(
+    "REST: select('%s').from('%s').limit(%d, %d).type('%s').contentType('%s')",
           select, uriWithRoot, offset, limit, type ? type : "*", contentType);
+
         ret = corto_select(select)
           .from(uriWithRoot)
           .offset(offset)
@@ -83,6 +81,7 @@ void rest_service_apiGet(
 
     /* Add object to result list */
     corto_buffer_appendstr(&response, "[");
+
     /* Collect types if typedescriptors are requested */
     corto_ll types = NULL;
     if (descriptor) {
@@ -102,13 +101,11 @@ void rest_service_apiGet(
                 if (!strcmp(corto_iter_next(&it), result->type)) {
                     found = TRUE;
                 }
-
             }
 
             if (!found) {
                 corto_ll_append(types, corto_strdup(result->type));
             }
-
         }
 
         corto_buffer_append(&response, "{\"id\":\"%s\"", result->id);
@@ -130,7 +127,6 @@ void rest_service_apiGet(
             if (escaped != id) {
                 corto_dealloc(escaped);
             }
-
         }
 
         if (value) {
@@ -138,7 +134,6 @@ void rest_service_apiGet(
             if (valueTxt) {
                 corto_buffer_append(&response, ",\"value\":%s", valueTxt);
             }
-
         }
 
         corto_buffer_append(&response, "}");
@@ -156,7 +151,6 @@ void rest_service_apiGet(
             corto_dealloc(responseStr);
             return;
         }
-
     }
 
     if (descriptor && corto_ll_count(types)) {
@@ -179,7 +173,6 @@ void rest_service_apiGet(
                 corto_buffer_append(&tdbuffer, "\"%s\":%s", typeId, td);
                 corto_dealloc(typeId);
             }
-
         }
 
         corto_buffer_appendstr(&tdbuffer, "}}");
@@ -202,7 +195,7 @@ void rest_service_apiPut(
     char *id = httpserver_HTTP_Request_getVar(r, "id");
 
     corto_id realId;
-    sprintf(realId, "/%s/%s/%s", httpserver_Service(this)->prefix, uri, id);
+    sprintf(realId, "/%s/%s/%s", this->from, uri, id);
     corto_path_clean(realId, realId);
 
     corto_trace("REST: PUT uri='%s' id='%s' value = '%s' (computed id = %s)", uri, id, value, realId);
@@ -270,7 +263,7 @@ int16_t rest_service_construct(
     return httpserver_Service_construct(this);
 }
 
-int16_t rest_service_onDelete(
+int16_t rest_service_on_delete(
     rest_service this,
     httpserver_HTTP_Connection c,
     httpserver_HTTP_Request *r,
@@ -280,7 +273,7 @@ int16_t rest_service_onDelete(
     return 1;
 }
 
-int16_t rest_service_onGet(
+int16_t rest_service_on_get(
     rest_service this,
     httpserver_HTTP_Connection c,
     httpserver_HTTP_Request *r,
@@ -290,7 +283,7 @@ int16_t rest_service_onGet(
     return 1;
 }
 
-int16_t rest_service_onPost(
+int16_t rest_service_on_post(
     rest_service this,
     httpserver_HTTP_Connection c,
     httpserver_HTTP_Request *r,
@@ -300,7 +293,7 @@ int16_t rest_service_onPost(
     return 1;
 }
 
-int16_t rest_service_onPut(
+int16_t rest_service_on_put(
     rest_service this,
     httpserver_HTTP_Connection c,
     httpserver_HTTP_Request *r,
