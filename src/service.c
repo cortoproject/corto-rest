@@ -108,8 +108,18 @@ void rest_service_apiGet(
             }
         }
 
-        corto_buffer_append(&response, "{\"id\":\"%s\"", result->id);
-        if (parent && strcmp(result->parent, ".")) corto_buffer_append(&response, ",\"parent\":\"%s\"", result->parent);
+        if (strcmp(result->parent, ".")) {
+            if (!parent) {
+                corto_buffer_append(
+                    &response, "{\"id\":\"%s/%s\"", result->parent, result->id);
+            } else {
+                corto_buffer_append(&response, "{\"id\":\"%s\"", result->id);
+                corto_buffer_append(
+                    &response, ",\"parent\":\"%s\"", result->parent);
+            }
+        } else {
+            corto_buffer_append(&response, "{\"id\":\"%s\"", result->id);
+        }
         corto_buffer_append(&response, ",\"type\":\"%s\"", result->type);
         if (name && result->name) corto_buffer_append(&response, ",\"name\":\"%s\"", result->name);
         if (leaf) corto_buffer_append(&response, ",\"leaf\":%s", result->flags & CORTO_RESULT_LEAF ? "true" : "false");
