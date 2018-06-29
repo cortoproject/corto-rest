@@ -44,7 +44,7 @@ void rest_service_apiGet(
     limit = atoi(httpserver_HTTP_Request_getVar(r, "limit"));
     type = httpserver_HTTP_Request_getVar(r, "type");
     select = httpserver_HTTP_Request_getVar(r, "select");
-    corto_string contentType = value ? "text/json" : NULL;
+    corto_string format = value ? "text/json" : NULL;
 
     if (!*type) type = NULL;
     if (!*select) select = NULL;
@@ -62,15 +62,15 @@ void rest_service_apiGet(
         }
 
         corto_trace(
-    "REST: select('%s').from('%s').limit(%d, %d).type('%s').contentType('%s')",
-          select, uriWithRoot, offset, limit, type ? type : "*", contentType);
+    "REST: select('%s').from('%s').limit(%d, %d).type('%s').format('%s')",
+          select, uriWithRoot, offset, limit, type ? type : "*", format);
 
         ret = corto_select(select)
           .from(uriWithRoot)
           .offset(offset)
           .limit(limit)
           .type(type)
-          .contentType(contentType)
+          .format(format)
           .iter(&iter);
         if (ret) {
             httpserver_HTTP_Request_setStatus(r, 400);
@@ -140,7 +140,7 @@ void rest_service_apiGet(
         }
 
         if (value) {
-            corto_string valueTxt = corto_result_getText(result);
+            corto_string valueTxt = corto_result_get_text(result);
             if (valueTxt) {
                 corto_buffer_append(&response, ",\"value\":%s", valueTxt);
             }
@@ -275,8 +275,8 @@ int16_t rest_service_construct(
 
 int16_t rest_service_on_delete(
     rest_service this,
-    httpserver_HTTP_Connection c,
-    httpserver_HTTP_Request *r,
+    corto_httpserver_HTTP_Connection c,
+    corto_httpserver_HTTP_Request *r,
     const char *uri)
 {
     rest_service_apiDelete(this, c, r, uri);
@@ -285,8 +285,8 @@ int16_t rest_service_on_delete(
 
 int16_t rest_service_on_get(
     rest_service this,
-    httpserver_HTTP_Connection c,
-    httpserver_HTTP_Request *r,
+    corto_httpserver_HTTP_Connection c,
+    corto_httpserver_HTTP_Request *r,
     const char *uri)
 {
     rest_service_apiGet(this, c, r, uri);
@@ -295,8 +295,8 @@ int16_t rest_service_on_get(
 
 int16_t rest_service_on_post(
     rest_service this,
-    httpserver_HTTP_Connection c,
-    httpserver_HTTP_Request *r,
+    corto_httpserver_HTTP_Connection c,
+    corto_httpserver_HTTP_Request *r,
     const char *uri)
 {
     rest_service_apiPost(this, c, r, uri);
@@ -305,8 +305,8 @@ int16_t rest_service_on_post(
 
 int16_t rest_service_on_put(
     rest_service this,
-    httpserver_HTTP_Connection c,
-    httpserver_HTTP_Request *r,
+    corto_httpserver_HTTP_Connection c,
+    corto_httpserver_HTTP_Request *r,
     const char *uri)
 {
     rest_service_apiPut(this, c, r, uri);
