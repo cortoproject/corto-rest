@@ -1,0 +1,14 @@
+in corto.rest
+use corto.httpserver
+
+// REST interface that provides access to Corto store
+class service: httpserver/Service {
+    from: string
+    construct() int16
+
+override
+    on_get(HTTP/Connection c, HTTP/Request r, string uri) int16
+    on_post(HTTP/Connection c, HTTP/Request r, string uri) int16
+    on_put(HTTP/Connection c, HTTP/Request r, string uri) int16
+    on_delete(HTTP/Connection c, HTTP/Request r, string uri) int16
+}
