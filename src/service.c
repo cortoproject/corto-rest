@@ -89,7 +89,7 @@ void rest_service_apiGet(
     }
 
     while (corto_iter_hasNext(&iter)) {
-        corto_result *result = corto_iter_next(&iter);
+        corto_record *result = corto_iter_next(&iter);
         if (count) {
             corto_buffer_append(&response, ",");
         }
@@ -140,7 +140,7 @@ void rest_service_apiGet(
         }
 
         if (value) {
-            corto_string valueTxt = corto_result_get_text(result);
+            corto_string valueTxt = corto_record_get_text(result);
             if (valueTxt) {
                 corto_buffer_append(&response, ",\"value\":%s", valueTxt);
             }
