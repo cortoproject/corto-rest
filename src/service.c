@@ -205,12 +205,14 @@ void rest_service_apiPut(
     char *id = httpserver_HTTP_Request_getVar(r, "id");
 
     corto_id realId;
-    sprintf(realId, "/%s/%s/%s", this->from, uri, id);
+    sprintf(realId, "/%s/%s", uri, id);
     corto_path_clean(realId, realId);
 
-    corto_trace("REST: PUT uri='%s' id='%s' value = '%s' (computed id = %s)", uri, id, value, realId);
+    corto_trace(
+      "REST: PUT uri='%s' id='%s' value = '%s' (computed id = %s)",
+      uri, id, value, realId);
 
-    if (corto_publish(CORTO_UPDATE, realId, NULL, "text/json", value)) {
+    if (corto_publish(CORTO_UPDATE, this->from, realId, NULL, "text/json", value)) {
         corto_string msg;
         msg = corto_asprintf("400: PUT failed: %s: id=%s, value=%s",
           corto_lasterr(), id, value);
@@ -234,7 +236,15 @@ void rest_service_apiPost(
     char *type = httpserver_HTTP_Request_getVar(r, "type");
     char *value = httpserver_HTTP_Request_getVar(r, "value");
 
-    if (corto_publish(CORTO_DEFINE, id, type, "text/json", value)) {
+    corto_id realId;
+    sprintf(realId, "/%s/%s", uri, id);
+    corto_path_clean(realId, realId);
+
+    corto_trace(
+      "REST: POST uri='%s' id='%s' value = '%s' (computed id = %s)",
+      uri, id, value, realId);
+
+    if (corto_publish(CORTO_DEFINE, this->from, realId, type, "text/json", value)) {
         corto_string msg;
         msg = corto_asprintf("400: POST failed: %s: id=%s, type=%s, value=%s",
           corto_lasterr(), id, type, value);
@@ -254,8 +264,17 @@ void rest_service_apiDelete(
     httpserver_HTTP_Request *r,
     const char *uri)
 {
-    corto_string select = httpserver_HTTP_Request_getVar(r, "select");
-    if (corto_publish(CORTO_DELETE, select, NULL, NULL, NULL)) {
+    char *id = httpserver_HTTP_Request_getVar(r, "id");
+
+    corto_id realId;
+    sprintf(realId, "/%s/%s", uri, id);
+    corto_path_clean(realId, realId);
+
+    corto_trace(
+      "REST: DELETE uri='%s' id='%s' (computed id = %s)",
+      uri, id, realId);
+
+    if (corto_publish(CORTO_DELETE, this->from, realId, NULL, NULL, NULL)) {
         corto_string msg;
         msg = corto_asprintf("400: DELETE failed: %s", corto_lasterr());
         httpserver_HTTP_Request_setStatus(r, 400);
