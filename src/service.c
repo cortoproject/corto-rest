@@ -122,7 +122,7 @@ void rest_service_apiGet(
         }
         corto_buffer_append(&response, ",\"type\":\"%s\"", result->type);
         if (name && result->name) corto_buffer_append(&response, ",\"name\":\"%s\"", result->name);
-        if (leaf) corto_buffer_append(&response, ",\"leaf\":%s", result->flags & CORTO_RESULT_LEAF ? "true" : "false");
+        if (leaf) corto_buffer_append(&response, ",\"leaf\":%s", result->flags & CORTO_RECORD_LEAF ? "true" : "false");
         if (owner && result->owner) {
             corto_id id;
             char *escaped = id;
