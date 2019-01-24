@@ -6,21 +6,20 @@
 #ifndef CORTO_REST_H
 #define CORTO_REST_H
 
-#include <corto/corto.h>
-#include <corto/rest/_project.h>
-#include <corto/httpserver/c/c.h>
-#include <corto/c/c.h>
-#include <corto/httpserver/httpserver.h>
+#include "bake_config.h"
+
+#define CORTO_REST_ETC ut_locate("corto.rest", NULL, UT_LOCATE_ETC)
 
 /* $header() */
 /* Enter additional code here. */
 /* $end */
 
-#include <corto/rest/_type.h>
-#include <corto/rest/_interface.h>
-#include <corto/rest/_load.h>
-#include <corto/rest/_binding.h>
-#include <corto/rest/c/_api.h>
+#include "_type.h"
+#include "_interface.h"
+#include "_load.h"
+#include "_binding.h"
+
+#include <corto.rest.c>
 
 /* $body() */
 /* Enter code that requires types here */

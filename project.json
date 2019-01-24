@@ -1,13 +1,14 @@
 {
-    "id": "corto/rest",
+    "id": "corto.rest",
     "type": "package",
     "value": {
         "author": "Sander Mertens",
         "organization": "cortoproject",
         "repository": "https://github.com/cortoproject/rest",
-        "license": "MIT",        
+        "license": "MIT",
         "description": "REST service for querying store contents",
         "version": "1.0.0",
-        "use": ["corto/httpserver"]
-    }
+        "use": ["corto.httpserver"]
+    },
+    "corto": { }
 }

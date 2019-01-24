@@ -1,6 +1,6 @@
 /* This is a managed file. Do not delete this comment. */
 
-#include <corto/rest/rest.h>
+#include <corto.rest>
 
 int cortomain(int argc, char *argv[]) {
 
