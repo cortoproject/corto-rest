@@ -1,7 +1,6 @@
 /* This is a managed file. Do not delete this comment. */
 
-#include <corto/rest/rest.h>
-#include "driver/fmt/json/json.h"
+#include <corto.rest>
 
 void rest_service_apiGet(
     rest_service this,
@@ -21,9 +20,9 @@ void rest_service_apiGet(
     corto_string select = NULL;
     corto_int32 count = 0;
     corto_int16 ret;
-    corto_iter iter;
+    ut_iter iter;
 
-    corto_buffer response = CORTO_BUFFER_INIT;
+    ut_strbuf response = UT_STRBUF_INIT;
 
     /* Set correct content type */
     httpserver_HTTP_Request_setHeader(
@@ -56,12 +55,12 @@ void rest_service_apiGet(
         corto_id uriWithRoot;
         if (this->from) {
             sprintf(uriWithRoot, "%s/%s", this->from, uri);
-            corto_path_clean(uriWithRoot, uriWithRoot);
+            ut_path_clean(uriWithRoot, uriWithRoot);
         } else {
             strcpy(uriWithRoot, *uri ? uri : "/");
         }
 
-        corto_trace(
+        ut_trace(
     "REST: select('%s').from('%s').limit(%d, %d).type('%s').format('%s')",
           select, uriWithRoot, offset, limit, type ? type : "*", format);
 
@@ -80,49 +79,49 @@ void rest_service_apiGet(
     }
 
     /* Add object to result list */
-    corto_buffer_appendstr(&response, "[");
+    ut_strbuf_appendstr(&response, "[");
 
     /* Collect types if typedescriptors are requested */
-    corto_ll types = NULL;
+    ut_ll types = NULL;
     if (descriptor) {
-        types = corto_ll_new();
+        types = ut_ll_new();
     }
 
-    while (corto_iter_hasNext(&iter)) {
-        corto_record *result = corto_iter_next(&iter);
+    while (ut_iter_hasNext(&iter)) {
+        corto_record *result = ut_iter_next(&iter);
         if (count) {
-            corto_buffer_append(&response, ",");
+            ut_strbuf_append(&response, ",");
         }
 
         if (descriptor) {
-            corto_iter it = corto_ll_iter(types);
+            ut_iter it = ut_ll_iter(types);
             corto_bool found = FALSE;
-            while (corto_iter_hasNext(&it)) {
-                if (!strcmp(corto_iter_next(&it), result->type)) {
+            while (ut_iter_hasNext(&it)) {
+                if (!strcmp(ut_iter_next(&it), result->type)) {
                     found = TRUE;
                 }
             }
 
             if (!found) {
-                corto_ll_append(types, corto_strdup(result->type));
+                ut_ll_append(types, ut_strdup(result->type));
             }
         }
 
         if (strcmp(result->parent, ".")) {
             if (!parent) {
-                corto_buffer_append(
+                ut_strbuf_append(
                     &response, "{\"id\":\"%s/%s\"", result->parent, result->id);
             } else {
-                corto_buffer_append(&response, "{\"id\":\"%s\"", result->id);
-                corto_buffer_append(
+                ut_strbuf_append(&response, "{\"id\":\"%s\"", result->id);
+                ut_strbuf_append(
                     &response, ",\"parent\":\"%s\"", result->parent);
             }
         } else {
-            corto_buffer_append(&response, "{\"id\":\"%s\"", result->id);
+            ut_strbuf_append(&response, "{\"id\":\"%s\"", result->id);
         }
-        corto_buffer_append(&response, ",\"type\":\"%s\"", result->type);
-        if (name && result->name) corto_buffer_append(&response, ",\"name\":\"%s\"", result->name);
-        if (leaf) corto_buffer_append(&response, ",\"leaf\":%s", result->flags & CORTO_RECORD_LEAF ? "true" : "false");
+        ut_strbuf_append(&response, ",\"type\":\"%s\"", result->type);
+        if (name && result->name) ut_strbuf_append(&response, ",\"name\":\"%s\"", result->name);
+        if (leaf) ut_strbuf_append(&response, ",\"leaf\":%s", result->flags & CORTO_RECORD_LEAF ? "true" : "false");
         if (owner && result->owner) {
             corto_id id;
             char *escaped = id;
@@ -133,7 +132,7 @@ void rest_service_apiGet(
                 stresc(escaped, length + 1, '"', id);
             }
 
-            corto_buffer_append(&response , ",\"owner\":\"%s\"", escaped);
+            ut_strbuf_append(&response , ",\"owner\":\"%s\"", escaped);
             if (escaped != id) {
                 corto_dealloc(escaped);
             }
@@ -142,19 +141,19 @@ void rest_service_apiGet(
         if (value) {
             corto_string valueTxt = corto_record_get_text(result);
             if (valueTxt) {
-                corto_buffer_append(&response, ",\"value\":%s", valueTxt);
+                ut_strbuf_append(&response, ",\"value\":%s", valueTxt);
             }
         }
 
-        corto_buffer_append(&response, "}");
+        ut_strbuf_append(&response, "}");
         count ++;
     }
 
-    corto_buffer_append(&response, "]");
-    corto_string responseStr = corto_buffer_str(&response);
+    ut_strbuf_append(&response, "]");
+    corto_string responseStr = ut_strbuf_get(&response);
     if (!count) {
         if (!select || (!strchr(select, '/') && !strchr(select, '*'))) {
-            corto_string msg = corto_asprintf("404: resource not found '%s'", uri);
+            corto_string msg = ut_asprintf("404: resource not found '%s'", uri);
             httpserver_HTTP_Request_setStatus(r, 404);
             httpserver_HTTP_Request_reply(r, msg);
             corto_dealloc(msg);
@@ -163,31 +162,31 @@ void rest_service_apiGet(
         }
     }
 
-    if (descriptor && corto_ll_count(types)) {
-        corto_buffer tdbuffer = CORTO_BUFFER_INIT;
-        corto_buffer_append(&tdbuffer, "{\"o\":%s,\"t\":{", responseStr);
+    if (descriptor && ut_ll_count(types)) {
+        ut_strbuf tdbuffer = UT_STRBUF_INIT;
+        ut_strbuf_append(&tdbuffer, "{\"o\":%s,\"t\":{", responseStr);
         corto_dealloc(responseStr);
-        corto_iter it = corto_ll_iter(types);
+        ut_iter it = ut_ll_iter(types);
         corto_bool first = TRUE;
-        while (corto_iter_hasNext(&it)) {
-            corto_string typeId = corto_iter_next(&it);
+        while (ut_iter_hasNext(&it)) {
+            corto_string typeId = ut_iter_next(&it);
             corto_type t = corto_resolve(NULL, typeId);
             if (t) {
                 corto_string td = httpserver_typedescriptor(t);
                 if (!first) {
-                    corto_buffer_appendstr(&tdbuffer, ",");
+                    ut_strbuf_appendstr(&tdbuffer, ",");
                 } else {
                     first = FALSE;
                 }
 
-                corto_buffer_append(&tdbuffer, "\"%s\":%s", typeId, td);
+                ut_strbuf_append(&tdbuffer, "\"%s\":%s", typeId, td);
                 corto_dealloc(typeId);
             }
         }
 
-        corto_buffer_appendstr(&tdbuffer, "}}");
-        responseStr = corto_buffer_str(&tdbuffer);
-        corto_ll_free(types);
+        ut_strbuf_appendstr(&tdbuffer, "}}");
+        responseStr = ut_strbuf_get(&tdbuffer);
+        ut_ll_free(types);
     }
 
     httpserver_HTTP_Request_reply(r, responseStr);
@@ -206,16 +205,16 @@ void rest_service_apiPut(
 
     corto_id realId;
     sprintf(realId, "/%s/%s", uri, id);
-    corto_path_clean(realId, realId);
+    ut_path_clean(realId, realId);
 
-    corto_trace(
+    ut_trace(
       "REST: PUT uri='%s' id='%s' value = '%s' (computed id = %s)",
       uri, id, value, realId);
 
     if (corto_publish(CORTO_UPDATE, this->from, realId, NULL, "text/json", value)) {
         corto_string msg;
-        msg = corto_asprintf("400: PUT failed: %s: id=%s, value=%s",
-          corto_lasterr(), id, value);
+        msg = ut_asprintf("400: PUT failed: %s: id=%s, value=%s",
+          ut_lasterr(), id, value);
         httpserver_HTTP_Request_setStatus(r, 400);
         httpserver_HTTP_Request_reply(r, msg);
     } else {
@@ -238,16 +237,16 @@ void rest_service_apiPost(
 
     corto_id realId;
     sprintf(realId, "/%s/%s", uri, id);
-    corto_path_clean(realId, realId);
+    ut_path_clean(realId, realId);
 
-    corto_trace(
+    ut_trace(
       "REST: POST uri='%s' id='%s' value = '%s' (computed id = %s)",
       uri, id, value, realId);
 
     if (corto_publish(CORTO_DEFINE, this->from, realId, type, "text/json", value)) {
         corto_string msg;
-        msg = corto_asprintf("400: POST failed: %s: id=%s, type=%s, value=%s",
-          corto_lasterr(), id, type, value);
+        msg = ut_asprintf("400: POST failed: %s: id=%s, type=%s, value=%s",
+          ut_lasterr(), id, type, value);
         httpserver_HTTP_Request_setStatus(r, 400);
         httpserver_HTTP_Request_reply(r, msg);
     } else {
@@ -268,15 +267,15 @@ void rest_service_apiDelete(
 
     corto_id realId;
     sprintf(realId, "/%s/%s", uri, id);
-    corto_path_clean(realId, realId);
+    ut_path_clean(realId, realId);
 
-    corto_trace(
+    ut_trace(
       "REST: DELETE uri='%s' id='%s' (computed id = %s)",
       uri, id, realId);
 
     if (corto_publish(CORTO_DELETE, this->from, realId, NULL, NULL, NULL)) {
         corto_string msg;
-        msg = corto_asprintf("400: DELETE failed: %s", corto_lasterr());
+        msg = ut_asprintf("400: DELETE failed: %s", ut_lasterr());
         httpserver_HTTP_Request_setStatus(r, 400);
         httpserver_HTTP_Request_reply(r, msg);
     } else {
